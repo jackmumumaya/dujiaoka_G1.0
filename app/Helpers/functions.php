@@ -12,7 +12,7 @@ use App\Exceptions\AppException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
-if (! function_exists('replace_mail_tpl')) {
+if (!function_exists('replace_mail_tpl')) {
 
     /**
      * 替换邮件模板
@@ -42,7 +42,7 @@ if (! function_exists('replace_mail_tpl')) {
 }
 
 
-if (! function_exists('dujiaoka_config_get')) {
+if (!function_exists('dujiaoka_config_get')) {
 
     /**
      * 系统配置获取
@@ -57,12 +57,12 @@ if (! function_exists('dujiaoka_config_get')) {
      */
     function dujiaoka_config_get(string $key, $default = null)
     {
-       $sysConfig = Cache::get('system-setting');
-       return $sysConfig[$key] ?? $default;
+        $sysConfig = Cache::get('system-setting');
+        return $sysConfig[$key] ?? $default;
     }
 }
 
-if (! function_exists('format_wholesale_price')) {
+if (!function_exists('format_wholesale_price')) {
 
     /**
      * 格式化批发价
@@ -93,7 +93,7 @@ if (! function_exists('format_wholesale_price')) {
     }
 }
 
-if (! function_exists('delete_html_code')) {
+if (!function_exists('delete_html_code')) {
 
     /**
      * 去除html内容
@@ -113,7 +113,7 @@ if (! function_exists('delete_html_code')) {
     }
 }
 
-if (! function_exists('format_charge_input')) {
+if (!function_exists('format_charge_input')) {
 
     /**
      * 格式化代充框
@@ -144,7 +144,7 @@ if (! function_exists('format_charge_input')) {
     }
 }
 
-if (! function_exists('site_url')) {
+if (!function_exists('site_url')) {
 
     /**
      * 获取顶级域名 带协议
@@ -158,7 +158,7 @@ if (! function_exists('site_url')) {
     }
 }
 
-if (! function_exists('md5_signquery')) {
+if (!function_exists('md5_signquery')) {
 
     function md5_signquery(array $parameter, string $signKey)
     {
@@ -167,7 +167,8 @@ if (! function_exists('md5_signquery')) {
         $sign = '';
         $urls = '';
         foreach ($parameter as $key => $val) {
-            if ($val == '') continue;
+            if ($val == '')
+                continue;
             if ($key != 'sign') {
                 if ($sign != '') {
                     $sign .= "&";
@@ -183,7 +184,7 @@ if (! function_exists('md5_signquery')) {
     }
 }
 
-if (! function_exists('signquery_string')) {
+if (!function_exists('signquery_string')) {
 
     function signquery_string(array $data)
     {
@@ -191,8 +192,10 @@ if (! function_exists('signquery_string')) {
         reset($data); //内部指针指向数组中的第一个元素
         $sign = ''; //加密字符串初始化
         foreach ($data as $key => $val) {
-            if ($val == '' || $key == 'sign') continue; //跳过这些不签名
-            if ($sign) $sign .= '&'; //第一个字符串签名不加& 其他加&连接起来参数
+            if ($val == '' || $key == 'sign')
+                continue; //跳过这些不签名
+            if ($sign)
+                $sign .= '&'; //第一个字符串签名不加& 其他加&连接起来参数
             $sign .= "$key=$val"; //拼接为url参数形式
         }
         return $sign;
@@ -209,7 +212,11 @@ if (!function_exists('picture_ulr')) {
      */
     function picture_ulr($file, $getHost = false)
     {
-        if ($getHost) return Storage::disk('admin')->url('');
+        if ($getHost)
+            return Storage::disk('admin')->url('');
+        if (filter_var($file, FILTER_VALIDATE_URL)) {
+            return $file;
+        }
         return $file ? Storage::disk('admin')->url($file) : url('assets/common/images/default.jpg');
     }
 }

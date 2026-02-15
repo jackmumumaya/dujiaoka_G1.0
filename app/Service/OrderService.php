@@ -70,9 +70,11 @@ class OrderService
             'by_amount.min' =>  __('dujiaoka.prompt.buy_amount_format_error'),
             'payway.required' =>  __('dujiaoka.prompt.please_select_mode_of_payment'),
             'payway.integer' =>  __('dujiaoka.prompt.please_select_mode_of_payment'),
+
+
+            'gid.required' =>  __('dujiaoka.prompt.goods_does_not_exist'),
             'email.required' =>  __('dujiaoka.prompt.email_format_error'),
             'email.email' =>  __('dujiaoka.prompt.email_format_error'),
-            'gid.required' =>  __('dujiaoka.prompt.goods_does_not_exist'),
         ]);
         if ($validator->fails()) {
             throw new RuleValidationException($validator->errors()->first());

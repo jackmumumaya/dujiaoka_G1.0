@@ -12,6 +12,16 @@ class Pay extends BaseModel
 
     protected $table = 'pays';
 
+    protected $fillable = [
+        'pay_name',
+        'pay_check',
+        'pay_client',
+        'config_json',
+        'is_open',
+        'sort',
+        'icon_path', // 新增字段
+    ];
+
     /**
      * 跳转
      */

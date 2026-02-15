@@ -87,7 +87,7 @@ class OrderController extends BaseController
             return redirect(url('/bill', ['orderSN' => $order->order_sn]));
         } catch (RuleValidationException $exception) {
             DB::rollBack();
-            return $this->err($exception->getMessage());
+            return redirect()->back()->withInput()->withErrors(['email' => $exception->getMessage()]);
         }
     }
 

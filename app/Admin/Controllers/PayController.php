@@ -108,6 +108,10 @@ class PayController extends AdminController
         return Form::make(new Pay(), function (Form $form) {
             $form->display('id');
             $form->text('pay_name')->required();
+            $form->image('icon_path')
+                ->dir('uploads/pay_icons') // 设置上传目录，相对于 public 目录
+                ->autoUpload()
+                ->help('请上传支付方式的图标，PNG 格式，文件名最好与pay_name一致');
             $form->text('merchant_id')->required();
             $form->textarea('merchant_key');
             $form->textarea('merchant_pem')->required();

@@ -250,6 +250,9 @@
                                         <div class="pay-type @if($key == 0) pay-select @endif"
                                              data-type="{{ $way['pay_check'] }}" data-id="{{ $way['id'] }}"
                                              data-name="{{ $way['pay_name'] }}">
+                                            @if(!empty($way['icon_path']))
+                                                <img src="{{ picture_ulr($way['icon_path']) }}" alt="{{ $way['pay_name'] }}" style="height: 100%; max-height: 40px;">
+                                            @endif
                                         </div>
                                     @endforeach
                                 </div>
@@ -340,7 +343,7 @@
     <script src="/assets/luna/js/viewerjs/viewer.min.js"></script>
     <script>
         var buyPrompt = $(".buy-prompt").html();
-        if ($.trim(buyPrompt)) window.tipsMsg("{{ __('goods.fields.buy_prompt') }}", buyPrompt);
+        // if ($.trim(buyPrompt)) window.tipsMsg("{{ __('goods.fields.buy_prompt') }}", buyPrompt);
         gtWidth = window.clientWidth <= 767 ? '100%' : '312px';
         layui.use(['form'], function () {
             var form = layui.form;

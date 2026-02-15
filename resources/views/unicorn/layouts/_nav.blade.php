@@ -17,24 +17,50 @@
                         <div class="container-fluid">
                             <a class="navbar-brand" href="/">{{ dujiaoka_config_get('text_logo') }}</a>
                             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#navbarColor" aria-controls="navbarColor" aria-expanded="false"
-                                    aria-label="Toggle navigation">
+                                data-bs-target="#navbarColor" aria-controls="navbarColor" aria-expanded="false"
+                                aria-label="Toggle navigation">
                                 <span class="navbar-toggler-icon"></span>
                             </button>
 
                             <div class="collapse navbar-collapse" id="navbarColor">
                                 <ul class="navbar-nav me-auto">
                                     <li class="nav-item">
-                                        <a class="nav-link @if(\Illuminate\Support\Facades\Request::path() == '/') active @endif " href="/">{{__('dujiaoka.home_page')}}
+                                        <a class="nav-link @if(\Illuminate\Support\Facades\Request::path() == '/') active @endif "
+                                            href="/">{{__('dujiaoka.home_page')}}
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link @if(\Illuminate\Support\Facades\Request::url() == url('order-search')) active @endif" href="{{ url('order-search') }}">{{ __('dujiaoka.order_search') }}</a>
+                                        <a class="nav-link @if(\Illuminate\Support\Facades\Request::url() == url('order-search')) active @endif"
+                                            href="{{ url('order-search') }}">{{ __('dujiaoka.order_search') }}</a>
                                     </li>
+                                    @guest
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{{ route('login') }}">登录</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{{ route('register') }}">注册</a>
+                                        </li>
+                                    @else
+                                        <li class="nav-item dropdown">
+                                            <a class="nav-link dropdown-toggle" href="#" role="button"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                                {{ Auth::user()->name }}
+                                            </a>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <form method="POST" action="{{ route('logout') }}">
+                                                        @csrf
+                                                        <button type="submit" class="dropdown-item">退出登录</button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    @endguest
                                 </ul>
                                 @if(\Illuminate\Support\Facades\Request::path() == '/')
                                     <form class="d-flex">
-                                        <input class="form-control form-control-sm me-sm-2" id="searchText" type="text" placeholder="{{ __('dujiaoka.search_goods_name') }}">
+                                        <input class="form-control form-control-sm me-sm-2" id="searchText" type="text"
+                                            placeholder="{{ __('dujiaoka.search_goods_name') }}">
                                         <button class="btn btn-secondary my-2 my-sm-0" type="button" id="searchBtn">
                                             <i class="ali-icon">&#xe65c;</i>
                                         </button>

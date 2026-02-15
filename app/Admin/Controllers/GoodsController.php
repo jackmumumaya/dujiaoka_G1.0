@@ -14,6 +14,7 @@ use Dcat\Admin\Grid;
 use Dcat\Admin\Show;
 use Dcat\Admin\Http\Controllers\AdminController;
 use App\Models\Goods as GoodsModel;
+use Illuminate\Support\Facades\Storage;
 
 class GoodsController extends AdminController
 {
@@ -29,7 +30,12 @@ class GoodsController extends AdminController
         return Grid::make(new Goods(['group', 'coupon']), function (Grid $grid) {
             $grid->model()->orderBy('id', 'DESC');
             $grid->column('id')->sortable();
-            $grid->column('picture')->image('', 100, 100);
+            $grid->column('picture')->display(function ($picture) {
+                if (filter_var($picture, FILTER_VALIDATE_URL)) {
+                    return "<img src='$picture' style='max-width:100px;max-height:100px' class='img img-thumbnail' />";
+                }
+                return "<img src='" . Storage::disk('admin')->url($picture) . "' style='max-width:100px;max-height:100px' class='img img-thumbnail' />";
+            });
             $grid->column('gd_name');
             $grid->column('gd_description');
             $grid->column('gd_keywords');
@@ -115,14 +121,15 @@ class GoodsController extends AdminController
                 }
             });
             $show->wholesale_price_cnf()->unescape()->as(function ($wholesalePriceCnf) {
-                return  "<textarea class=\"form-control field_wholesale_price_cnf _normal_\"  rows=\"10\" cols=\"30\">" . $wholesalePriceCnf . "</textarea>";
+                return "<textarea class=\"form-control field_wholesale_price_cnf _normal_\"  rows=\"10\" cols=\"30\">" . $wholesalePriceCnf . "</textarea>";
             });
             $show->other_ipu_cnf()->unescape()->as(function ($otherIpuCnf) {
-                return  "<textarea class=\"form-control field_wholesale_price_cnf _normal_\"  rows=\"10\" cols=\"30\">" . $otherIpuCnf . "</textarea>";
+                return "<textarea class=\"form-control field_wholesale_price_cnf _normal_\"  rows=\"10\" cols=\"30\">" . $otherIpuCnf . "</textarea>";
             });
             $show->api_hook()->unescape()->as(function ($apiHook) {
-                return  "<textarea class=\"form-control field_wholesale_price_cnf _normal_\"  rows=\"10\" cols=\"30\">" . $apiHook . "</textarea>";
-            });;
+                return "<textarea class=\"form-control field_wholesale_price_cnf _normal_\"  rows=\"10\" cols=\"30\">" . $apiHook . "</textarea>";
+            });
+            ;
         });
     }
 

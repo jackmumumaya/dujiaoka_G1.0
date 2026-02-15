@@ -9,7 +9,7 @@
 use Illuminate\Support\Facades\Route;
 
 
-Route::group(['middleware' => ['dujiaoka.boot'],'namespace' => 'Home'], function () {
+Route::group(['middleware' => ['dujiaoka.boot'], 'namespace' => 'Home'], function () {
     // 首页
     Route::get('/', 'HomeController@index');
     // 极验效验
@@ -32,9 +32,17 @@ Route::group(['middleware' => ['dujiaoka.boot'],'namespace' => 'Home'], function
     Route::post('search-order-by-email', 'OrderController@searchOrderByEmail');
     // 通过浏览器查询
     Route::post('search-order-by-browser', 'OrderController@searchOrderByBrowser');
+
+    // 用户登录注册
+    Route::get('login', 'UserController@login')->name('login');
+    Route::post('login', 'UserController@doLogin');
+    Route::get('register', 'UserController@register')->name('register');
+    Route::post('register', 'UserController@doRegister');
+    Route::get('logout', 'UserController@logout')->name('logout');
+    Route::get('user', 'UserController@index')->name('user');
 });
 
-Route::group(['middleware' => ['install.check'],'namespace' => 'Home'], function () {
+Route::group(['middleware' => ['install.check'], 'namespace' => 'Home'], function () {
     // 安装
     Route::get('install', 'HomeController@install');
     // 执行安装

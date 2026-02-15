@@ -1,0 +1,120 @@
+/* custom.css */
+
+/* 展示完全商品标题 */
+.home-card .name {
+    white-space: normal !important; /* 允许换行 */
+    overflow: visible !important;   /* 允许内容溢出 */
+    text-overflow: clip !important; /* 不再显示省略号 */
+    max-height: none !important; /* 确保高度不被限制 */
+}
+
+/* 针对新样式需求进行调整 */
+
+/* 1. 卡片圆角，背景色白色 */
+.home-wrapper .home-card {
+    border-radius: 10px !important; /* 卡片圆角 */
+    background-color: #ffffff !important; /* 背景色白色 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 添加轻微阴影，使卡片更突出 */
+    padding: 15px !important; /* 增加内边距 */
+    transition: transform 0.2s; /* 添加过渡效果 */
+}
+
+.home-wrapper .home-card:hover {
+    transform: translateY(-5px); /* 鼠标悬停时轻微上浮 */
+}
+
+/* 2. 图片圆角 */
+.home-card .home-img {
+    border-radius: 8px !important; /* 图片圆角，可以略小于卡片圆角 */
+    width: 100%; /* 确保图片宽度填充卡片 */
+    height: auto; /* 保持图片比例 */
+    display: block; /* 移除图片底部可能存在的额外空间 */
+    margin-bottom: 10px; /* 图片下方增加间距 */
+}
+
+/* 3. 单列 4 个商品布局 */
+/* 在桌面端每行显示 4 个商品 */
+@media (min-width: 1200px) { /* 大屏幕，例如大于等于1200px */
+    .home-wrapper {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr) !important; /* 每行4列 */
+        gap: 20px; /* 卡片之间的间距 */
+    }
+    .home-wrapper .home-card {
+        width: 100% !important; /* grid 布局下，子项宽度应为100% */
+        margin: 0 !important;
+    }
+}
+@media (min-width: 992px) and (max-width: 1199px) { /* 中等屏幕，例如平板横屏 */
+    .home-wrapper {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr) !important; /* 每行3列 */
+        gap: 20px;
+    }
+    .home-wrapper .home-card {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+}
+@media (min-width: 768px) and (max-width: 991px) { /* 小屏幕，例如平板竖屏 */
+    .home-wrapper {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr) !important; /* 每行2列 */
+        gap: 20px;
+    }
+    .home-wrapper .home-card {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+}
+@media (max-width: 767px) { /* 移动设备 */
+    .home-wrapper {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr) !important; /* 每行1列 */
+        gap: 20px;
+    }
+    .home-wrapper .home-card {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+}
+
+/* 确保标题和价格等在新的卡片布局中显示良好 */
+.home-card .flex {
+    display: flex;
+    flex-direction: column; /* 垂直排列 */
+    /* 其他Flexbox属性根据需要调整 */
+}
+.home-card .price {
+    display: flex;
+    justify-content: space-between; /* 价格和库存左右对齐 */
+    align-items: baseline;
+    margin-bottom: 5px;
+}
+.home-card .name {
+    flex-grow: 1; /* 标题占据剩余空间 */
+    margin-bottom: 10px;
+    font-size: 1.1em; /* 稍微增大标题字体 */
+    color: #333;
+    line-height: 1.3;
+}
+.home-card .buy {
+    width: 100%; /* 购买按钮宽度100% */
+    text-align: center;
+    margin-top: auto; /* 按钮始终在底部 */
+    padding: 8px 0;
+    border-radius: 5px;
+    background-color: #007bff; /* 蓝色按钮 */
+    color: #fff;
+    font-size: 1em;
+    text-decoration: none; /* 移除下划线 */
+}
+.home-card .buy:hover {
+    background-color: #0056b3;
+}
+
+/* 调整其他可能被覆盖的默认样式 */
+.home-card.category {
+    text-decoration: none; /* 确保链接没有下划线 */
+    color: inherit; /* 继承父元素颜色 */
+}

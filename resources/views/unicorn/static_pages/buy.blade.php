@@ -123,6 +123,9 @@
                                                                         <label class="form-check-label">
                                                                             <input type="radio" class="form-check-input"
                                                                                    name="payway" value="{{ $way['id'] }}" @if($index == 0) checked="checked" @endif>
+                                                                            @if(!empty($way['icon_path']))
+                                                                                <img src="{{ picture_ulr($way['icon_path']) }}" alt="{{ $way['pay_name'] }}" style="height: 20px; vertical-align: middle;">
+                                                                            @endif
                                                                             {{ $way['pay_name'] }}
                                                                         </label>
                                                                     </div>
@@ -185,12 +188,14 @@
 @section('js')
 <script src="/assets/unicorn/js/bootstrap-input-spinner.js"></script>
 <script>
+            {{--
             @if(!empty($buy_prompt))
             var myModal = new bootstrap.Modal(document.getElementById('staticBackdrop'))
             $(function(){
                 myModal.show()
             });
             @endif
+            --}}
             $("input[type='number']").inputSpinner();
             $('#submit').click(function(){
                 if($("input[name='by_amount']").val() > {{ $in_stock }}){
