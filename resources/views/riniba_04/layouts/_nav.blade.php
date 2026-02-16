@@ -49,7 +49,6 @@
 
 <script>
 (function() {
-    // Unique ID for the hint element to prevent duplicates
     var hintId = 'gemini-nav-hint-' + Math.random().toString(36).substr(2, 9);
     
     function initHint() {
@@ -61,13 +60,12 @@
             hint = document.createElement('div');
             hint.id = hintId;
             hint.setAttribute('role', 'tooltip');
-            // Updated style: Black color, sleek long arrow
+            // Updated style: Thicker arrow (stroke-width: 4)
             hint.innerHTML = `
                 <div style="display: flex; align-items: center; justify-content: flex-end;">
-                  <span style="color: #000000; font-weight: bold; font-size: 14px; margin-right: 8px; white-space: nowrap; letter-spacing: 1px;">点击展开</span>
-                  <svg width="40" height="20" viewBox="0 0 40 20" fill="none" style="filter: drop-shadow(0 1px 1px rgba(255,255,255,0.8));">
-                    <!-- Long sleek arrow -->
-                    <path d="M0 10H38M38 10L30 3M38 10L30 17" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <span style="color: #000000; font-weight: bold; font-size: 15px; margin-right: 8px; white-space: nowrap; letter-spacing: 1px;">点击展开</span>
+                  <svg width="42" height="24" viewBox="0 0 42 24" fill="none" style="filter: drop-shadow(0 1px 1px rgba(255,255,255,0.8));">
+                    <path d="M2 12H38M38 12L28 4M38 12L28 20" stroke="#000000" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </div>
             `;
@@ -78,14 +76,12 @@
             hint.style.display = 'none';
             
             hint.addEventListener('click', function(e) {
-                e.stopPropagation();
                 e.preventDefault();
                 btn.click();
             });
             
             document.body.appendChild(hint);
             
-            // Subtle horizontal pulse
             if (!document.getElementById('gemini-hint-style')) {
                 var s = document.createElement('style');
                 s.id = 'gemini-hint-style';
@@ -99,11 +95,10 @@
         var isVisible = rect.width > 0 && rect.height > 0 && window.getComputedStyle(btn).display !== 'none';
         var isExpanded = btn.getAttribute('aria-expanded') === 'true' || !btn.classList.contains('collapsed');
 
-        // Logic: Show if button is visible AND not expanded
         if (isVisible && !isExpanded) {
             hint.style.display = 'block';
-            hint.style.top = (rect.top + rect.height / 2 - 10) + 'px'; // Center
-            hint.style.left = (rect.left - 120) + 'px'; // Position to left (more space for long arrow)
+            hint.style.top = (rect.top + rect.height / 2 - 12) + 'px'; 
+            hint.style.left = (rect.left - 130) + 'px'; // Slightly more space for thicker arrow
         } else {
             hint.style.display = 'none';
         }
