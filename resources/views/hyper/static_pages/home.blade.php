@@ -6,7 +6,8 @@
             <div class="page-title-right">
                 <div class="app-search">
                     <div class="position-relative">
-                        <input type="text" class="form-control" id="search" placeholder="{{ __('hyper.home_search_box') }}">
+                        <input type="text" class="form-control" id="search"
+                            placeholder="{{ __('hyper.home_search_box') }}">
                         <span class="uil-search"></span>
                     </div>
                 </div>
@@ -21,25 +22,47 @@
         </div>
     </div>
 </div>
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="btn-group">
+            <a href="{{ request()->fullUrlWithQuery(['sort' => null]) }}"
+                class="btn btn-sm btn-outline-secondary {{ !request('sort') ? 'active' : '' }}">
+                {{ __('dujiaoka.default_sort') }}
+            </a>
+            <a href="{{ request()->fullUrlWithQuery(['sort' => 'sales_volume']) }}"
+                class="btn btn-sm btn-outline-secondary {{ request('sort') == 'sales_volume' ? 'active' : '' }}">
+                {{-- 销量 --}}
+                {{ __('dujiaoka.sales_volume') }}
+            </a>
+            <a href="{{ request()->fullUrlWithQuery(['filter' => request('filter') == 'in_stock' ? null : 'in_stock']) }}"
+                class="btn btn-sm btn-outline-secondary {{ request('filter') == 'in_stock' ? 'active' : '' }}">
+                {{-- 仅看有货 --}}
+                {{ __('dujiaoka.in_stock_only') }}
+            </a>
+        </div>
+    </div>
+</div>
 <div class="nav nav-list">
-    <a href="#group-all" class="tab-link active" data-bs-toggle="tab" aria-expanded="false" role="tab" data-toggle="tab">
+    <a href="#group-all" class="tab-link active" data-bs-toggle="tab" aria-expanded="false" role="tab"
+        data-toggle="tab">
         <span class="tab-title">
-        {{-- 全部 --}}
-        {{ __('hyper.home_whole') }}
+            {{-- 全部 --}}
+            {{ __('hyper.home_whole') }}
         </span>
         <div class="img-checkmark">
             <img src="/assets/hyper/images/check.png">
         </div>
     </a>
-    @foreach($data as  $index => $group)
-    <a href="#group-{{ $group['id'] }}" class="tab-link" data-bs-toggle="tab" aria-expanded="false" role="tab" data-toggle="tab">
-        <span class="tab-title">
-            {{ $group['gp_name'] }}
-        </span>
-        <div class="img-checkmark">
-            <img src="/assets/hyper/images/check.png">
-        </div>
-    </a>
+    @foreach($data as $index => $group)
+        <a href="#group-{{ $group['id'] }}" class="tab-link" data-bs-toggle="tab" aria-expanded="false" role="tab"
+            data-toggle="tab">
+            <span class="tab-title">
+                {{ $group['gp_name'] }}
+            </span>
+            <div class="img-checkmark">
+                <img src="/assets/hyper/images/check.png">
+            </div>
+        </a>
     @endforeach
 </div>
 <div class="tab-content">
@@ -48,51 +71,53 @@
             @foreach($data as $group)
                 @foreach($group['goods'] as $goods)
                     @if($goods['in_stock'] > 0)
-                    <a href="{{ url("/buy/{$goods['id']}") }}" class="home-card category">
+                        <a href="{{ url("/buy/{$goods['id']}") }}" class="home-card category">
                     @else
-                    <a href="javascript:void(0);" onclick="sell_out_tip()" class="home-card category ribbon-box">
-                        <div class="ribbon-two ribbon-two-danger">
-                            {{-- 缺货 --}}
-                            <span>{{ __('hyper.home_out_of_stock') }}</span>
-                        </div>
-                    @endif
-                        <img class="home-img" src="/assets/hyper/images/loading.gif" data-src="{{ picture_ulr($goods['picture']) }}">
-                        <div class="flex">
-                            <p class="name">
-                                {{ $goods['gd_name'] }}
-                            </p>
-                            <div class="price">
-                                {{ __('hyper.global_currency') }}<b>{{ $goods['actual_price'] }}</b>
+                            <a href="javascript:void(0);" onclick="sell_out_tip()" class="home-card category ribbon-box">
+                                <div class="ribbon-two ribbon-two-danger">
+                                    {{-- 缺货 --}}
+                                    <span>{{ __('hyper.home_out_of_stock') }}</span>
+                                </div>
+                        @endif
+                            <img class="home-img" src="/assets/hyper/images/loading.gif"
+                                data-src="{{ picture_ulr($goods['picture']) }}">
+                            <div class="flex">
+                                <p class="name">
+                                    {{ $goods['gd_name'] }}
+                                </p>
+                                <div class="price">
+                                    {{ __('hyper.global_currency') }}<b>{{ $goods['actual_price'] }}</b>
+                                </div>
                             </div>
-                        </div>
-                    </a>
+                        </a>
                 @endforeach
             @endforeach
         </div>
     </div>
-    @foreach($data as  $index => $group)
+    @foreach($data as $index => $group)
         <div class="tab-pane" id="group-{{ $group['id'] }}">
             <div class="hyper-wrapper">
                 @foreach($group['goods'] as $goods)
                     @if($goods['in_stock'] > 0)
-                    <a href="{{ url("/buy/{$goods['id']}") }}" class="home-card category">
+                        <a href="{{ url("/buy/{$goods['id']}") }}" class="home-card category">
                     @else
-                    <a href="javascript:void(0);" onclick="sell_out_tip()" class="home-card category ribbon-box">
-                        <div class="ribbon-two ribbon-two-danger">
-                            {{-- 缺货 --}}
-                            <span>{{ __('hyper.home_out_of_stock') }}</span>
-                        </div>
-                    @endif
-                        <img class="home-img" src="/assets/hyper/images/loading.gif" data-src="{{ picture_ulr($goods['picture']) }}">
-                        <div class="flex">
-                            <p class="name">
-                                {{ $goods['gd_name'] }}
-                            </p>
-                            <div class="price">
-                                {{ __('hyper.global_currency') }}<b>{{ $goods['actual_price'] }}</b>
+                            <a href="javascript:void(0);" onclick="sell_out_tip()" class="home-card category ribbon-box">
+                                <div class="ribbon-two ribbon-two-danger">
+                                    {{-- 缺货 --}}
+                                    <span>{{ __('hyper.home_out_of_stock') }}</span>
+                                </div>
+                        @endif
+                            <img class="home-img" src="/assets/hyper/images/loading.gif"
+                                data-src="{{ picture_ulr($goods['picture']) }}">
+                            <div class="flex">
+                                <p class="name">
+                                    {{ $goods['gd_name'] }}
+                                </p>
+                                <div class="price">
+                                    {{ __('hyper.global_currency') }}<b>{{ $goods['actual_price'] }}</b>
+                                </div>
                             </div>
-                        </div>
-                    </a>
+                        </a>
                 @endforeach
             </div>
         </div>
@@ -111,22 +136,22 @@
         </div>
     </div>
 </div>
-@stop 
+@stop
 @section('js')
 <script>
-    $('#notice-open').click(function() {
+    $('#notice-open').click(function () {
         $('#notice-modal').modal();
     });
-    $("#search").on("input",function(e){
+    $("#search").on("input", function (e) {
         var txt = $("#search").val();
-        if($.trim(txt)!="") {
-            $(".category").hide().filter(":contains('"+txt+"')").show();
+        if ($.trim(txt) != "") {
+            $(".category").hide().filter(":contains('" + txt + "')").show();
         } else {
             $(".category").show();
         }
     });
     function sell_out_tip() {
-        $.NotificationApp.send("{{ __('hyper.home_tip') }}","{{ __('hyper.home_sell_out_tip') }}","top-center","rgba(0,0,0,0.2)","info");
+        $.NotificationApp.send("{{ __('hyper.home_tip') }}", "{{ __('hyper.home_sell_out_tip') }}", "top-center", "rgba(0,0,0,0.2)", "info");
     }
 </script>
 @stop

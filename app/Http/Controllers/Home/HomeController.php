@@ -19,7 +19,7 @@ class HomeController extends BaseController
 
     /**
      * 商品服务层.
-     * @var \App\Service\PayService
+     * @var \App\Service\GoodsService
      */
     private $goodsService;
 
@@ -46,7 +46,8 @@ class HomeController extends BaseController
      */
     public function index(Request $request)
     {
-        $goods = $this->goodsService->withGroup();
+        $params = $request->only(['sort', 'filter']);
+        $goods = $this->goodsService->withGroup($params);
         return $this->render('static_pages/home', ['data' => $goods], __('dujiaoka.page-title.home'));
     }
 
@@ -95,7 +96,7 @@ class HomeController extends BaseController
     public function geetest(Request $request)
     {
         $data = [
-            'user_id' => @Auth::user()?@Auth::user()->id:'UnLoginUser',
+            'user_id' => @Auth::user() ? @Auth::user()->id : 'UnLoginUser',
             'client_type' => 'web',
             'ip_address' => \Illuminate\Support\Facades\Request::ip()
         ];
@@ -157,15 +158,15 @@ class HomeController extends BaseController
             Redis::get('dujiaoka_com');
             // 获得文件模板
             $envExamplePath = base_path() . DIRECTORY_SEPARATOR . '.env.example';
-            $envPath =  base_path() . DIRECTORY_SEPARATOR . '.env';
+            $envPath = base_path() . DIRECTORY_SEPARATOR . '.env';
             $installLock = base_path() . DIRECTORY_SEPARATOR . 'install.lock';
             $installSql = database_path() . DIRECTORY_SEPARATOR . 'sql' . DIRECTORY_SEPARATOR . 'install.sql';
             $envTemp = file_get_contents($envExamplePath);
             $postData = $request->all();
             // 临时写入key
             $postData['app_key'] = 'base64:' . base64_encode(
-                    Encrypter::generateKey(config('app.cipher'))
-                );
+                Encrypter::generateKey(config('app.cipher'))
+            );
             foreach ($postData as $key => $item) {
                 $envTemp = str_replace('{' . $key . '}', $item, $envTemp);
             }

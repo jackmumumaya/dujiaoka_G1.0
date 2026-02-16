@@ -37,16 +37,48 @@ class GoodsService
      * @copyright assimon<ashang@utf8.hk>
      * @link      http://utf8.hk/
      */
-    public function withGroup(): ?array
+    public function withGroup($params = []): ?array
     {
         $goods = GoodsGroup::query()
             ->with([
-                'goods' => function ($query) {
+                'goods' => function ($query) use ($params) {
                     $query->withCount([
                         'carmis' => function ($query) {
                             $query->where('status', Carmis::STATUS_UNSOLD);
                         }
-                    ])->where('is_open', Goods::STATUS_OPEN)->orderBy('ord', 'DESC')->orderBy('id', 'DESC');
+                    ])->where('is_open', Goods::STATUS_OPEN);
+
+                    // Filter: In Stock Only
+                    if (isset($params['filter']) && $params['filter'] === 'in_stock') {
+                        $query->where(function ($q) {
+                            // Automatic: Check carmis count
+                            $q->where('type', Goods::AUTOMATIC_DELIVERY)->has('carmis', '>', 0, 'and', function ($cq) {
+                                $cq->where('status', Carmis::STATUS_UNSOLD);
+                            });
+                        })->orWhere(function ($q) {
+                            // Manual: Check in_stock field
+                            $q->where('type', Goods::MANUAL_PROCESSING)->where('in_stock', '>', 0);
+                        });
+                    }
+
+                    // Sorting
+                    if (isset($params['sort'])) {
+                        switch ($params['sort']) {
+                            case 'sales_volume':
+                                $query->orderBy('sales_volume', 'DESC');
+                                break;
+                            case 'price_asc':
+                                $query->orderBy('actual_price', 'ASC');
+                                break;
+                            case 'price_desc':
+                                $query->orderBy('actual_price', 'DESC');
+                                break;
+                            default:
+                                $query->orderBy('ord', 'DESC')->orderBy('id', 'DESC');
+                        }
+                    } else {
+                        $query->orderBy('ord', 'DESC')->orderBy('id', 'DESC');
+                    }
                 }
             ])
             ->where('is_open', GoodsGroup::STATUS_OPEN)
