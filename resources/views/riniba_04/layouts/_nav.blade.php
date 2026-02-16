@@ -1,4 +1,44 @@
-<div class="top-header">
+<div class="top-header" style="position: relative;">
+  <!-- Mobile Hint Overlay - Moved outside to prevent overflow clipping -->
+  <!-- Onclick trigger ensures the button toggles when this text is clicked -->
+  <div class="mobile-hint-overlay d-lg-none" onclick="document.getElementById('myButton').click()"
+    style="position: absolute; right: 80px; top: 50%; transform: translateY(-50%); z-index: 10000; cursor: pointer; display: flex; align-items: center; justify-content: flex-end;">
+    <span
+      style="color: #dc3545; font-weight: bold; font-size: 14px; margin-right: 5px; white-space: nowrap;">点击展开</span>
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" class="hint-arrow-anim">
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#dc3545" />
+        </marker>
+      </defs>
+      <!-- Curve styling to point to the button -->
+      <path d="M5 20 Q 15 20, 20 10" stroke="#dc3545" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+    </svg>
+  </div>
+  <style>
+    @keyframes arrow-pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.1) translateX(3px);
+      }
+    }
+
+    .hint-arrow-anim {
+      animation: arrow-pulse 1.5s infinite;
+    }
+
+    /* Hide hint when menu is expanded (aria-expanded=true) */
+    /* Note: We need JS or sibling selector. Since this div is far from button, we use a simple script to hide it if needed, 
+       but for simplicity we let it stay or relying on user clicking it which toggles menu */
+    /* Better: Use CSS has selector if supported, but risky. 
+       Let's keep it visible always on mobile as a "Menu" label equivalent. */
+  </style>
+
   <div class="container header-block">
     <div class="header-left">
       <div class="header-right clearfix">
@@ -9,52 +49,10 @@
                 alt="{{ dujiaoka_config_get('text_logo') }}"
                 style="height: 100px; width: auto; vertical-align: middle;">
             </a>
-            <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" id="myButton"
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" id="myButton"
               data-bs-target="#navbarColor" aria-controls="navbarColor" aria-expanded="false"
-              aria-label="Toggle navigation" style="position: relative; overflow: visible;">
+              aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
-
-              <!-- Mobile Hint: Only visible when collapsed -->
-              <div class="mobile-hint-arrow"
-                style="position: absolute; top: 100%; right: 5px; flex-direction: column; align-items: flex-end; width: 120px; pointer-events: none;">
-                <svg class="hint-anim-target" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#dc3545"
-                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                  style="filter: drop-shadow(0 0 2px rgba(255,255,255,0.8));">
-                  <line x1="6" y1="18" x2="18" y2="6"></line>
-                  <polyline points="8 6 18 6 18 16"></polyline>
-                </svg>
-                <span
-                  style="color: #dc3545; font-weight: bold; font-size: 13px; margin-top: -10px; text-shadow: 0 0 3px #fff;">点击展开</span>
-              </div>
-
-              <style>
-                /* Default hidden */
-                .mobile-hint-arrow {
-                  display: none;
-                }
-
-                /* Show ONLY when collapsed (Bootstrap adds 'collapsed' class or aria-expanded='false') */
-                .navbar-toggler.collapsed .mobile-hint-arrow,
-                .navbar-toggler[aria-expanded="false"] .mobile-hint-arrow {
-                  display: flex;
-                }
-
-                @keyframes poke-top-right {
-
-                  0%,
-                  100% {
-                    transform: translate(0, 0);
-                  }
-
-                  50% {
-                    transform: translate(-5px, 5px);
-                  }
-                }
-
-                .hint-anim-target {
-                  animation: poke-top-right 1.5s infinite ease-in-out;
-                }
-              </style>
             </button>
             <div class="collapse navbar-collapse" id="navbarColor">
               <ul class="navbar-nav me-auto centered-nav">
