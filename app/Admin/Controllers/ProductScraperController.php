@@ -196,7 +196,7 @@ HTML;
 
             $html .= '<tr>';
             $html .= '<td>
-                        <input type="checkbox" name="products[' . $index . '][selected]" value="1" checked class="product-select">
+                        <input type="checkbox" name="products[' . $index . '][selected]" value="1" checked class="product-select" data-stock="' . $product['stock'] . '">
                         <input type="hidden" name="products[' . $index . '][name]" value="' . e($product['name']) . '">
                         <input type="hidden" name="products[' . $index . '][desc]" value="' . e($product['desc']) . '">
                         <input type="hidden" name="products[' . $index . '][img]" value="' . e($product['img']) . '">
@@ -226,6 +226,16 @@ HTML;
                 $("#select-all").click(function() {
                     $(".product-select").prop("checked", this.checked);
                 });
+                
+                // Add button for "Select Only In-Stock"
+                var btn = $("<button type=\'button\' class=\'btn btn-info btn-sm ml-2\'>Select Only In-Stock</button>");
+                btn.click(function() {
+                    $(".product-select").each(function() {
+                        var stock = $(this).data("stock");
+                        $(this).prop("checked", stock > 0);
+                    });
+                });
+                $("#select-all").parent().append(btn);
             });
         </script>';
 
