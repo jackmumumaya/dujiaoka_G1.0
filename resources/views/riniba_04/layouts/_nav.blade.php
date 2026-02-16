@@ -9,35 +9,50 @@
                 alt="{{ dujiaoka_config_get('text_logo') }}"
                 style="height: 100px; width: auto; vertical-align: middle;">
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" id="myButton"
+            <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" id="myButton"
               data-bs-target="#navbarColor" aria-controls="navbarColor" aria-expanded="false"
               aria-label="Toggle navigation" style="position: relative; overflow: visible;">
               <span class="navbar-toggler-icon"></span>
-              <div
-                style="position: absolute; right: 110%; top: 50%; transform: translateY(-50%); color: #dc3545; font-weight: bold; white-space: nowrap; display: flex; align-items: center; cursor: pointer;">
-                <span style="font-size: 14px; margin-right: 2px;">点击此处展开</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                  class="arrow-hint">
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                  <polyline points="12 5 19 12 12 19"></polyline>
+
+              <!-- Mobile Hint: Only visible when collapsed -->
+              <div class="mobile-hint-arrow"
+                style="position: absolute; top: 100%; right: 5px; flex-direction: column; align-items: flex-end; width: 120px; pointer-events: none;">
+                <svg class="hint-anim-target" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#dc3545"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  style="filter: drop-shadow(0 0 2px rgba(255,255,255,0.8));">
+                  <line x1="6" y1="18" x2="18" y2="6"></line>
+                  <polyline points="8 6 18 6 18 16"></polyline>
                 </svg>
+                <span
+                  style="color: #dc3545; font-weight: bold; font-size: 13px; margin-top: -10px; text-shadow: 0 0 3px #fff;">点击展开</span>
               </div>
+
               <style>
-                @keyframes bounce-right {
+                /* Default hidden */
+                .mobile-hint-arrow {
+                  display: none;
+                }
+
+                /* Show ONLY when collapsed (Bootstrap adds 'collapsed' class or aria-expanded='false') */
+                .navbar-toggler.collapsed .mobile-hint-arrow,
+                .navbar-toggler[aria-expanded="false"] .mobile-hint-arrow {
+                  display: flex;
+                }
+
+                @keyframes poke-top-right {
 
                   0%,
                   100% {
-                    transform: translateX(0);
+                    transform: translate(0, 0);
                   }
 
                   50% {
-                    transform: translateX(3px);
+                    transform: translate(-5px, 5px);
                   }
                 }
 
-                .arrow-hint {
-                  animation: bounce-right 1s infinite;
+                .hint-anim-target {
+                  animation: poke-top-right 1.5s infinite ease-in-out;
                 }
               </style>
             </button>
