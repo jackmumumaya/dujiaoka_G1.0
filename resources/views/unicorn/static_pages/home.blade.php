@@ -60,17 +60,19 @@
             </div>
         </div>
         <!-- category end -->
-        <div class="filter-toolbar mb-3 text-center">
-            <div class="btn-group">
-                <a href="{{ request()->fullUrlWithQuery(['sort' => null]) }}" class="btn btn-sm btn-outline-secondary {{ !request('sort') ? 'active' : '' }}">
-                    {{ __('dujiaoka.default_sort') }}
-                </a>
-                <a href="{{ request()->fullUrlWithQuery(['sort' => 'sales_volume']) }}" class="btn btn-sm btn-outline-secondary {{ request('sort') == 'sales_volume' ? 'active' : '' }}">
-                    {{ __('dujiaoka.sales_volume') }}
-                </a>
-                <a href="{{ request()->fullUrlWithQuery(['filter' => request('filter') == 'in_stock' ? null : 'in_stock']) }}" class="btn btn-sm btn-outline-secondary {{ request('filter') == 'in_stock' ? 'active' : '' }}">
-                    {{ __('dujiaoka.in_stock_only') }}
-                </a>
+        <div class="filter-toolbar mb-4 mt-3 text-center">
+            <div class="container">
+                <div class="btn-group shadow-sm">
+                    <a href="{{ request()->fullUrlWithQuery(['sort' => null]) }}" class="btn btn-sm {{ !request('sort') ? 'btn-dark' : 'btn-outline-dark' }}">
+                        {{ __('dujiaoka.default_sort') }}
+                    </a>
+                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'sales_volume']) }}" class="btn btn-sm {{ request('sort') == 'sales_volume' ? 'btn-info' : 'btn-outline-info' }}">
+                        {{ __('dujiaoka.sales_volume') }}
+                    </a>
+                    <a href="{{ request()->fullUrlWithQuery(['filter' => request('filter') == 'in_stock' ? null : 'in_stock']) }}" class="btn btn-sm {{ request('filter') == 'in_stock' ? 'btn-success' : 'btn-outline-success' }}">
+                        {{ __('dujiaoka.in_stock_only') }}
+                    </a>
+                </div>
             </div>
         </div>
         <!-- goods start -->
