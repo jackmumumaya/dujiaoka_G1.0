@@ -17,6 +17,8 @@ class Goods extends BaseModel
         'deleted' => GoodsDeleted::class
     ];
 
+    protected $guarded = [];
+
     /**
      * 关联分类
      *
@@ -68,11 +70,12 @@ class Goods extends BaseModel
      */
     public function getInStockAttribute()
     {
-        if (isset($this->attributes['carmis_count'])
+        if (
+            isset($this->attributes['carmis_count'])
             &&
             $this->attributes['type'] == self::AUTOMATIC_DELIVERY
         ) {
-           $this->attributes['in_stock'] = $this->attributes['carmis_count'];
+            $this->attributes['in_stock'] = $this->attributes['carmis_count'];
         }
         return $this->attributes['in_stock'];
     }

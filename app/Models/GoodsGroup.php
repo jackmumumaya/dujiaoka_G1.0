@@ -17,6 +17,8 @@ class GoodsGroup extends BaseModel
         'deleted' => GoodsGroupDeleted::class
     ];
 
+    protected $guarded = [];
+
     /**
      * 关联商品
      *
