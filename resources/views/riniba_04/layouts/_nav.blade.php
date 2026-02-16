@@ -17,8 +17,9 @@
             <div class="collapse navbar-collapse" id="navbarColor">
               <ul class="navbar-nav me-auto centered-nav">
                 <a class="btn btn-top-nav" href="/">首页</a><a class="btn btn-top-nav" href="/order-search">订单查询</a><a
-                  class="btn btn-top-nav" href="https://t.me/Riniba" target="_blank">在线客服</a><a class="btn btn-top-nav"
-                  href="https://github.com/Riniba/dujiaoTemplate" target="_blank"><i class="uil uil-cart"></i> 开源地址</a>
+                  class="btn btn-top-nav" href="https://t.me/Gemini_51xueAi" target="_blank">在线客服</a><a
+                  class="btn btn-top-nav" href="https://t.me/ai51xue" target="_blank"><i class="uil uil-cart"></i>
+                  加入社区</a>
                 @guest
                   <a class="btn btn-top-nav" href="{{ route('login') }}">登录</a>
                   <a class="btn btn-top-nav" href="{{ route('register') }}">注册</a>
