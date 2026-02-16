@@ -77,13 +77,33 @@ HTML;
         $token = csrf_token();
         $products = $data['products'];
 
-        // Sort products: Stock (Desc) -> Sales (Desc)
+        // Sort products logic:
+        // 1. Has Stock (Global Priority)
+        // 2. Category Name (Group together)
+        // 3. Stock Count (High to Low)
+        // 4. Sales Volume (High to Low)
         usort($products, function ($a, $b) {
+            $hasStockA = ($a['stock'] ?? 0) > 0;
+            $hasStockB = ($b['stock'] ?? 0) > 0;
+
+            if ($hasStockA !== $hasStockB) {
+                return $hasStockB <=> $hasStockA; // True (1) before False (0)
+            }
+
+            // If both have stock or both don't, group by category
+            $catCmp = strcmp($a['category'], $b['category']);
+            if ($catCmp !== 0) {
+                return $catCmp;
+            }
+
+            // Same category, sort by stock amount
             $stockA = $a['stock'] ?? 0;
             $stockB = $b['stock'] ?? 0;
-            if ($stockA != $stockB) {
+            if ($stockA !== $stockB) {
                 return $stockB <=> $stockA;
             }
+
+            // Finally by sales
             $salesA = $a['sales_volume'] ?? 0;
             $salesB = $b['sales_volume'] ?? 0;
             return $salesB <=> $salesA;
