@@ -3,6 +3,8 @@
 namespace App\Admin\Controllers;
 
 use App\Admin\Actions\Post\BatchRestore;
+use App\Admin\Actions\Post\BatchDelete;
+use App\Admin\Actions\Post\BatchEditGoods;
 use App\Admin\Actions\Post\Restore;
 use App\Admin\Repositories\Goods;
 use App\Models\Carmis;
@@ -81,6 +83,9 @@ class GoodsController extends AdminController
             $grid->batchActions(function (Grid\Tools\BatchActions $batch) {
                 if (request('_scope_') == admin_trans('dujiaoka.trashed')) {
                     $batch->add(new BatchRestore(GoodsModel::class));
+                } else {
+                    $batch->add(new BatchDelete(GoodsModel::class));
+                    $batch->add(new BatchEditGoods());
                 }
             });
         });
