@@ -5,6 +5,8 @@ namespace App\Admin\Controllers;
 use App\Admin\Actions\Post\BatchRestore;
 use App\Admin\Actions\Post\BatchDelete;
 use App\Admin\Actions\Post\BatchEditGoods;
+use App\Admin\Actions\Post\BatchEnable;
+use App\Admin\Actions\Post\BatchDisable;
 use App\Admin\Actions\Post\Restore;
 use App\Admin\Repositories\Goods;
 use App\Models\Carmis;
@@ -59,8 +61,8 @@ class GoodsController extends AdminController
                 } else {
                     return $this->in_stock;
                 }
-            });
-            $grid->column('sales_volume');
+            })->sortable();
+            $grid->column('sales_volume')->sortable();
             $grid->column('ord')->editable()->sortable();
             $grid->column('is_open')->switch();
             $grid->column('created_at')->sortable();
@@ -86,6 +88,8 @@ class GoodsController extends AdminController
                 } else {
                     $batch->add(new BatchDelete(GoodsModel::class));
                     $batch->add(new BatchEditGoods());
+                    $batch->add(new BatchEnable());
+                    $batch->add(new BatchDisable());
                 }
             });
         });
