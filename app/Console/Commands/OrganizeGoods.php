@@ -118,14 +118,8 @@ class OrganizeGoods extends Command
             }
 
             // Calculations:
-            // High Priority Score for In-Stock items
-            // Base Score: 1,000,000 if stock > 0
-            // Secondary Score: Sales Volume
-
-            $baseScore = ($stock > 0) ? 1000000 : 0;
-
-            // New Ord value
-            $newOrd = $baseScore + ($product->sales_volume ?? 0);
+            // Just Sort by Stock Count (High stock first)
+            $newOrd = $stock;
 
             // Update if changed
             if ($product->ord != $newOrd) {
