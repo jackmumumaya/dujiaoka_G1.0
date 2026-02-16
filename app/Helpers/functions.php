@@ -217,6 +217,13 @@ if (!function_exists('picture_ulr')) {
         if (filter_var($file, FILTER_VALIDATE_URL)) {
             return $file;
         }
+        // Patch: Check if file exists in /storage/ (which maps to storage/app/public)
+        // If the file path starts with 'images/', it implies it was saved to storage/app/public/images
+        // We can force the URL to be /storage/$file if disk('admin') is misconfigured or pointing elsewhere
+        if (strpos($file, 'images/') === 0) {
+            return url('/storage/' . $file);
+        }
+
         return $file ? Storage::disk('admin')->url($file) : url('assets/common/images/default.jpg');
     }
 }
