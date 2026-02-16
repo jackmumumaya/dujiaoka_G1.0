@@ -1,44 +1,4 @@
-<div class="top-header" style="position: relative;">
-  <!-- Mobile Hint Overlay - Moved outside to prevent overflow clipping -->
-  <!-- Onclick trigger ensures the button toggles when this text is clicked -->
-  <div class="mobile-hint-overlay d-lg-none" onclick="document.getElementById('myButton').click()"
-    style="position: absolute; right: 80px; top: 50%; transform: translateY(-50%); z-index: 10000; cursor: pointer; display: flex; align-items: center; justify-content: flex-end;">
-    <span
-      style="color: #dc3545; font-weight: bold; font-size: 14px; margin-right: 5px; white-space: nowrap;">点击展开</span>
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" class="hint-arrow-anim">
-      <defs>
-        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-          <polygon points="0 0, 10 3.5, 0 7" fill="#dc3545" />
-        </marker>
-      </defs>
-      <!-- Curve styling to point to the button -->
-      <path d="M5 20 Q 15 20, 20 10" stroke="#dc3545" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
-    </svg>
-  </div>
-  <style>
-    @keyframes arrow-pulse {
-
-      0%,
-      100% {
-        transform: scale(1);
-      }
-
-      50% {
-        transform: scale(1.1) translateX(3px);
-      }
-    }
-
-    .hint-arrow-anim {
-      animation: arrow-pulse 1.5s infinite;
-    }
-
-    /* Hide hint when menu is expanded (aria-expanded=true) */
-    /* Note: We need JS or sibling selector. Since this div is far from button, we use a simple script to hide it if needed, 
-       but for simplicity we let it stay or relying on user clicking it which toggles menu */
-    /* Better: Use CSS has selector if supported, but risky. 
-       Let's keep it visible always on mobile as a "Menu" label equivalent. */
-  </style>
-
+<div class="top-header">
   <div class="container header-block">
     <div class="header-left">
       <div class="header-right clearfix">
@@ -86,3 +46,85 @@
     </div>
   </div>
 </div>
+
+<!-- Scripts for Mobile Menu Hint -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Mobile Menu Hint Script Loading...');
+    
+    var btn = document.getElementById('myButton');
+    if (!btn) {
+        console.error('Menu button not found!');
+        return;
+    }
+
+    // Create Hint Element
+    var hint = document.createElement('div');
+    hint.id = 'js-mobile-menu-hint';
+    hint.innerHTML = `
+        <span style="color: #dc3545; font-weight: bold; font-size: 14px; margin-right: 5px;">点击展开</span>
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" class="hint-arrow-anim">
+          <line x1="5" y1="19" x2="19" y2="5" stroke="#dc3545" stroke-width="2" stroke-linecap="round" />
+          <polyline points="9 5 19 5 19 15" stroke="#dc3545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+    `;
+    // Base Styles
+    hint.style.position = 'absolute';
+    hint.style.zIndex = '999999';
+    hint.style.display = 'none'; // hidden by default
+    hint.style.alignItems = 'center';
+    hint.style.cursor = 'pointer';
+    hint.style.pointerEvents = 'auto'; // ensure clickable
+    document.body.appendChild(hint);
+
+    // Animation Style
+    var style = document.createElement('style');
+    style.innerHTML = `
+        @keyframes hint-bounce { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(3px, -3px); } }
+        .hint-arrow-anim { animation: hint-bounce 1s infinite; }
+    `;
+    document.head.appendChild(style);
+
+    // Update Position Function
+    function updateHint() {
+        var rect = btn.getBoundingClientRect();
+        var compStyle = window.getComputedStyle(btn);
+        
+        // Hide if button hidden or expanded
+        if (compStyle.display === 'none' || btn.getAttribute('aria-expanded') === 'true') {
+            hint.style.display = 'none';
+            return;
+        }
+
+        // Show and Position
+        hint.style.display = 'flex';
+        // Position: Top-Right of button essentially
+        // Let's put it to the LEFT of the button as per user request (arrow pointing right/up)
+        // User screenshot: Arrow points TOP-RIGHT towards button. Text says "Click to expand".
+        // Hint should be below-left of button.
+        
+        var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        var scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+        
+        hint.style.top = (rect.bottom + scrollTop + 5) + 'px'; // 5px below button
+        hint.style.left = (rect.left + scrollLeft - 80) + 'px'; // Shift left
+    }
+
+    // Events
+    window.addEventListener('resize', updateHint);
+    window.addEventListener('scroll', updateHint);
+    setInterval(updateHint, 1000); // Polling for safety layout shifts
+    updateHint(); // Initial call
+
+    // Interaction
+    hint.addEventListener('click', function() {
+        btn.click();
+    });
+
+    // Observe Button attributes for aria-expanded changes
+    var observer = new MutationObserver(function(mutations) {
+        updateHint();
+    });
+    observer.observe(btn, { attributes: true, attributeFilter: ['aria-expanded', 'class', 'style'] });
+});
+</script>
