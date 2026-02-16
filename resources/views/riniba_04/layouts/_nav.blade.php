@@ -48,76 +48,70 @@
 </div>
 
 <script>
-  (function () {
-    // Self-executing function to avoid global scope pollution, but generic enough to run
-    // Using a more aggressive polling mechanism to handle any loading delays or dynamic updates
-
+(function() {
+    // Unique ID for the hint element to prevent duplicates
     var hintId = 'gemini-nav-hint-' + Math.random().toString(36).substr(2, 9);
-
+    
     function initHint() {
-      var btn = document.getElementById('myButton');
-      if (!btn) return;
+        var btn = document.getElementById('myButton');
+        if (!btn) return;
 
-      var hint = document.getElementById(hintId);
-      if (!hint) {
-        hint = document.createElement('div');
-        hint.id = hintId;
-        hint.setAttribute('role', 'tooltip');
-        hint.innerHTML = `
+        var hint = document.getElementById(hintId);
+        if (!hint) {
+            hint = document.createElement('div');
+            hint.id = hintId;
+            hint.setAttribute('role', 'tooltip');
+            // Updated style: Black color, sleek long arrow
+            hint.innerHTML = `
                 <div style="display: flex; align-items: center; justify-content: flex-end;">
-                  <span style="color: #dc3545; font-weight: bold; font-size: 14px; margin-right: 5px; white-space: nowrap; text-shadow: 0 1px 2px rgba(255,255,255,0.8);">点击展开</span>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="filter: drop-shadow(0 1px 2px rgba(255,255,255,0.8));">
-                    <path d="M4 12 L20 12 M14 6 L20 12 L14 18" stroke="#dc3545" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                  <span style="color: #000000; font-weight: bold; font-size: 14px; margin-right: 8px; white-space: nowrap; letter-spacing: 1px;">点击展开</span>
+                  <svg width="40" height="20" viewBox="0 0 40 20" fill="none" style="filter: drop-shadow(0 1px 1px rgba(255,255,255,0.8));">
+                    <!-- Long sleek arrow -->
+                    <path d="M0 10H38M38 10L30 3M38 10L30 17" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </div>
             `;
-        // Fixed position ensures it overlays everything regardless of parents
-        hint.style.position = 'fixed';
-        hint.style.zIndex = '2147483647'; // Max z-index
-        hint.style.cursor = 'pointer';
-        hint.style.pointerEvents = 'auto';
-        hint.style.display = 'none'; // Init hidden
-
-        // Allow clicking hint to trigger button
-        hint.addEventListener('click', function (e) {
-          e.stopPropagation();
-          e.preventDefault();
-          btn.click();
-        });
-
-        document.body.appendChild(hint);
-
-        // Add pulse animation style
-        if (!document.getElementById('gemini-hint-style')) {
-          var s = document.createElement('style');
-          s.id = 'gemini-hint-style';
-          s.innerHTML = `@keyframes geminiPulse { 0% { transform: scale(1) translateX(0); } 50% { transform: scale(1.05) translateX(-5px); } 100% { transform: scale(1) translateX(0); } }`;
-          document.head.appendChild(s);
+            hint.style.position = 'fixed'; 
+            hint.style.zIndex = '2147483647';
+            hint.style.cursor = 'pointer';
+            hint.style.pointerEvents = 'auto';
+            hint.style.display = 'none';
+            
+            hint.addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                btn.click();
+            });
+            
+            document.body.appendChild(hint);
+            
+            // Subtle horizontal pulse
+            if (!document.getElementById('gemini-hint-style')) {
+                var s = document.createElement('style');
+                s.id = 'gemini-hint-style';
+                s.innerHTML = `@keyframes geminiPulse { 0% { transform: translateX(0); } 50% { transform: translateX(5px); } 100% { transform: translateX(0); } }`;
+                document.head.appendChild(s);
+            }
+            hint.children[0].style.animation = 'geminiPulse 1.5s infinite ease-in-out';
         }
-        hint.children[0].style.animation = 'geminiPulse 1.5s infinite ease-in-out';
-      }
 
-      // Logic: Show if button is visible (width > 0) AND not expanded
-      var rect = btn.getBoundingClientRect();
-      var isVisible = rect.width > 0 && rect.height > 0 && window.getComputedStyle(btn).display !== 'none';
-      var isExpanded = btn.getAttribute('aria-expanded') === 'true' || !btn.classList.contains('collapsed');
+        var rect = btn.getBoundingClientRect();
+        var isVisible = rect.width > 0 && rect.height > 0 && window.getComputedStyle(btn).display !== 'none';
+        var isExpanded = btn.getAttribute('aria-expanded') === 'true' || !btn.classList.contains('collapsed');
 
-      // Note: Bootstrap collapsed class logic can be inverse depending on version, checking aria-expanded is safer.
-      // Usually: collapsed class present = closed. aria-expanded="false" = closed.
-
-      if (isVisible && !isExpanded) {
-        hint.style.display = 'block';
-        hint.style.top = (rect.top + rect.height / 2 - 12) + 'px'; // Center vertically relative to button
-        hint.style.left = (rect.left - 100) + 'px'; // Position to the left of the button
-      } else {
-        hint.style.display = 'none';
-      }
+        // Logic: Show if button is visible AND not expanded
+        if (isVisible && !isExpanded) {
+            hint.style.display = 'block';
+            hint.style.top = (rect.top + rect.height / 2 - 10) + 'px'; // Center
+            hint.style.left = (rect.left - 120) + 'px'; // Position to left (more space for long arrow)
+        } else {
+            hint.style.display = 'none';
+        }
     }
 
-    // Run immediately and frequently
     initHint();
-    setInterval(initHint, 200); // Check every 200ms to be super responsive
+    setInterval(initHint, 200);
     window.addEventListener('resize', initHint);
     window.addEventListener('scroll', initHint);
-  })();
+})();
 </script>
