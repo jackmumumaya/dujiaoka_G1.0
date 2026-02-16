@@ -76,14 +76,11 @@ HTML;
             \Illuminate\Support\Facades\Artisan::call('goods:organize');
             $output = \Illuminate\Support\Facades\Artisan::output();
 
-            return $content
-                ->header('Organization Complete')
-                ->body("<div class='alert alert-success'>Successfully organized goods!<br><pre>$output</pre></div>")
-                ->body('<a href="' . admin_url('goods') . '" class="btn btn-primary">Go to Goods Management</a> ');
+            admin_toastr('Organization Complete!', 'success');
+            return redirect()->back();
         } catch (\Exception $e) {
-            return $content
-                ->header('Organization Failed')
-                ->body("<div class='alert alert-danger'>Error: " . $e->getMessage() . "</div>");
+            admin_toastr('Organization Failed: ' . $e->getMessage(), 'error');
+            return redirect()->back();
         }
     }
 
