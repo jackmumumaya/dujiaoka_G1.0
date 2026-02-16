@@ -40,11 +40,15 @@ class GoodsService
     public function withGroup(): ?array
     {
         $goods = GoodsGroup::query()
-            ->with(['goods' => function($query) {
-                $query->withCount(['carmis' => function($query) {
-                    $query->where('status', Carmis::STATUS_UNSOLD);
-                }])->where('is_open', Goods::STATUS_OPEN)->orderBy('ord', 'DESC');
-            }])
+            ->with([
+                'goods' => function ($query) {
+                    $query->withCount([
+                        'carmis' => function ($query) {
+                            $query->where('status', Carmis::STATUS_UNSOLD);
+                        }
+                    ])->where('is_open', Goods::STATUS_OPEN)->orderBy('ord', 'DESC')->orderBy('id', 'DESC');
+                }
+            ])
             ->where('is_open', GoodsGroup::STATUS_OPEN)
             ->orderBy('ord', 'DESC')
             ->get();
@@ -66,9 +70,11 @@ class GoodsService
     {
         $goods = Goods::query()
             ->with(['coupon'])
-            ->withCount(['carmis' => function($query) {
-                $query->where('status', Carmis::STATUS_UNSOLD);
-            }])->where('id', $id)->first();
+            ->withCount([
+                'carmis' => function ($query) {
+                    $query->where('status', Carmis::STATUS_UNSOLD);
+                }
+            ])->where('id', $id)->first();
         return $goods;
     }
 
