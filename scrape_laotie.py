@@ -215,8 +215,8 @@ def generate_sql():
                 # type 1 = Auto, 2 = Manual. Default to 2 (Manual) as we don't have accounts.
                 # Usually imported goods are manual unless we import carmis too.
                 
-                f.write(f"INSERT INTO goods (gd_name, gd_description, gd_keywords, picture, retail_price, actual_price, in_stock, group_id, type, is_open) VALUES "
-                        f"('{escape_sql(details['name'])}', '{escape_sql(details['desc'])}', '{escape_sql(details['name'])}', "
+                f.write(f"INSERT INTO goods (gd_name, gd_description, gd_keywords, description, picture, retail_price, actual_price, in_stock, group_id, type, is_open) VALUES "
+                        f"('{escape_sql(details['name'])}', '{escape_sql(details['name'])}', '{escape_sql(details['name'])}', '{escape_sql(details['desc'])}', "
                         f"'{escape_sql(local_img)}', {details['price']}, {details['price']}, {details['stock']}, "
                         f"@cat_id_{cat_counter}, 2, 1);\n")
                 
