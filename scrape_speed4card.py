@@ -133,13 +133,44 @@ def scrape_product_page(url):
             
     return products
 
+
+def download_image(url, save_dir):
+    if not url: return ""
+    try:
+        filename = url.split('/')[-1]
+        # Sanitize filename just in case
+        filename = re.sub(r'[^\w\.-]', '_', filename)
+        
+        filepath = os.path.join(save_dir, filename)
+        
+        # Check if file already exists to skip download
+        if os.path.exists(filepath):
+            return f"images/speed4card/{filename}"
+            
+        print(f"Downloading image: {url}")
+        req = urllib.request.Request(url, headers=HEADERS)
+        with urllib.request.urlopen(req, timeout=10) as response:
+            data = response.read()
+            with open(filepath, 'wb') as f:
+                f.write(data)
+                
+        return f"images/speed4card/{filename}"
+    except Exception as e:
+        print(f"Failed to download image {url}: {e}")
+        return ""
+
 def generate_sql(categories_data):
+    # Ensure directory exists for images
+    img_save_dir = os.path.join("storage", "app", "public", "images", "speed4card")
+    os.makedirs(img_save_dir, exist_ok=True)
+    
     with open(SQL_FILE, 'w', encoding='utf-8') as f:
         f.write("-- Speed4Card Import Script\n")
         f.write("SET NAMES utf8mb4;\n\n")
         
-        # We need a starting ID for SQL variable logic to avoid conflicts?
-        # Actually, using user defined variables @cat_id is fine.
+        # Clean up old external link entries to avoid duplicates/broken images
+        f.write("-- Remove previous imports that used external hotlinked images\n")
+        f.write("DELETE FROM goods WHERE picture LIKE 'https://www.speed4card.com%';\n\n")
         
         cat_counter = 0
         
@@ -149,12 +180,14 @@ def generate_sql(categories_data):
             
             # Insert Goods Group
             f.write(f"\n-- Category: {cat_name}\n")
+            # We use INSERT IGNORE to avoid duplicate group errors, or just check via simple logic?
+            # Actually simplest is just insert. If it fails on duplicate key, we ignore? 
+            # Dujiaoka doesn't have unique constraint on group name usually.
             f.write(f"INSERT INTO goods_group (gp_name, is_open, ord) VALUES ('{escape_sql(cat_name)}', 1, 1);\n")
             f.write(f"SET @cat_id_{cat_counter} = LAST_INSERT_ID();\n")
             
             # Process items
             # Constraint: Limiting to first 3 items per category to save time for this demo
-            # The user can run full script if they want, but for now we safeguard execution time.
             for item_name, item_url in items[:3]: 
                 if "/product/" in item_url:
                     goods_list = scrape_product_page(item_url)
@@ -163,15 +196,15 @@ def generate_sql(categories_data):
                     for good in goods_list:
                         final_price = round(good['price'] * 1.10, 2)
                         
-                        # Insert Goods
-                        # Fields: gd_name, gd_description, gd_keywords, picture, retail_price, actual_price, group_id, type
-                        # type: 1 (Manual) or 2 (Auto). The scraper saw "Auto Delivery" in text, but let's default to Auto(1) or Manual(1)?
-                        # Dujiaoka: 1=Automatic, 2=Manual (Manual is usually safer for imported stuff unless we have cards).
-                        # Actually model const: AUTOMATIC_DELIVERY = 1; MANUAL_PROCESSING = 2;
+                        # Download Image
+                        local_img_path = download_image(good['img'], img_save_dir)
+                        if not local_img_path:
+                            local_img_path = good['img'] # Fallback to external if download fails
                         
+                        # Insert Goods
                         f.write(f"INSERT INTO goods (gd_name, gd_description, gd_keywords, picture, retail_price, actual_price, group_id, type, is_open) VALUES "
                                 f"('{escape_sql(good['name'])}', '{escape_sql(good['desc'])}', '{escape_sql(good['name'])}', "
-                                f"'{good['img']}', {final_price}, {final_price}, @cat_id_{cat_counter}, 2, 1);\n")
+                                f"'{escape_sql(local_img_path)}', {final_price}, {final_price}, @cat_id_{cat_counter}, 2, 1);\n")
 
 def escape_sql(text):
     if not text: return ""
