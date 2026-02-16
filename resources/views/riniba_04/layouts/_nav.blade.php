@@ -15,9 +15,14 @@
               <span class="navbar-toggler-icon"></span>
             </button>
             <div class="menu-hint d-lg-none"
-              style="position: absolute; right: 60px; top: 50%; transform: translateY(-50%); color: #ff0000; font-weight: bold; pointer-events: none; white-space: nowrap;">
-              <span class="hint-text">点击此处展开</span> <i class="uil uil-arrow-right"
-                style="font-size: 20px; vertical-align: middle;"></i>
+              style="position: absolute; right: 55px; top: 50%; transform: translateY(-50%); z-index: 2000; color: #dc3545; font-weight: bold; pointer-events: none; white-space: nowrap; display: flex; align-items: center;">
+              <span class="hint-text" style="font-size: 14px; margin-right: 5px;">点击此处展开</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="arrow-icon">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
             </div>
             <style>
               @keyframes bounce-right {
@@ -32,8 +37,7 @@
                 }
               }
 
-              .menu-hint i {
-                display: inline-block;
+              .menu-hint .arrow-icon {
                 animation: bounce-right 1s infinite;
               }
             </style>
