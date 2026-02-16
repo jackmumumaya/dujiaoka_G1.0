@@ -25,6 +25,7 @@ class ProductScraperController extends Controller
     protected function renderForm()
     {
         $action = admin_url('product-scraper/preview');
+        $organizeAction = admin_url('product-scraper/organize');
         $token = csrf_token();
 
         return <<<HTML
@@ -47,9 +48,43 @@ class ProductScraperController extends Controller
             </div>
             <button type="submit" class="btn btn-primary">Start Scraping</button>
         </form>
+        
+        <hr>
+        
+        <form action="$organizeAction" method="POST" class="mt-4">
+            <input type="hidden" name="_token" value="$token">
+            <div class="form-group">
+                <label>Organize Existing Goods</label>
+                <small class="form-text text-muted">
+                    This will:
+                    <ul>
+                        <li>Merge duplicate categories (by name).</li>
+                        <li>Sort all goods: In-Stock items first, followed by sales volume.</li>
+                    </ul>
+                </small>
+            </div>
+            <button type="submit" class="btn btn-warning">Organize & Sort Now</button>
+        </form>
     </div>
 </div>
 HTML;
+    }
+
+    public function organize(Content $content)
+    {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('goods:organize');
+            $output = \Illuminate\Support\Facades\Artisan::output();
+
+            return $content
+                ->header('Organization Complete')
+                ->body("<div class='alert alert-success'>Successfully organized goods!<br><pre>$output</pre></div>")
+                ->body('<a href="' . admin_url('goods') . '" class="btn btn-primary">Go to Goods Management</a> ');
+        } catch (\Exception $e) {
+            return $content
+                ->header('Organization Failed')
+                ->body("<div class='alert alert-danger'>Error: " . $e->getMessage() . "</div>");
+        }
     }
 
     public function preview(Request $request, Content $content)
