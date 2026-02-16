@@ -77,6 +77,18 @@ HTML;
         $token = csrf_token();
         $products = $data['products'];
 
+        // Sort products: Stock (Desc) -> Sales (Desc)
+        usort($products, function ($a, $b) {
+            $stockA = $a['stock'] ?? 0;
+            $stockB = $b['stock'] ?? 0;
+            if ($stockA != $stockB) {
+                return $stockB <=> $stockA;
+            }
+            $salesA = $a['sales_volume'] ?? 0;
+            $salesB = $b['sales_volume'] ?? 0;
+            return $salesB <=> $salesA;
+        });
+
         $html = '<div class="card"><div class="card-body">';
         $html .= '<form action="' . $action . '" method="POST">';
         $html .= '<input type="hidden" name="_token" value="' . $token . '">';
