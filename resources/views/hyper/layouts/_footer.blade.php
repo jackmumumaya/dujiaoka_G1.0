@@ -3,8 +3,11 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6">
-            	<div class="footer-links">
-                    Powered by <a href="https://github.com/assimon/dujiaoka">@独角数卡.</a>
+                <div class="footer-links">
+                    💬 TG客服：<a href="https://t.me/Gemini_51xueAi" target="_blank"
+                        style="color: #1a73e8;">@Gemini_51xueAi</a>
+                    &nbsp;|&nbsp;
+                    📣 补货通知：<a href="https://t.me/ai51xue" target="_blank" style="color: #1a73e8;">t.me/ai51xue</a>
                 </div>
             </div>
             <div class="col-md-6">

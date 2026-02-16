@@ -3,7 +3,10 @@
     <div class="row">
         <div class="col-12 text-center">
             <div class="author">
-                Powered by：<a href="http://dujiaoka.com">@独角数卡</a>
+                💬 TG客服：<a href="https://t.me/Gemini_51xueAi" target="_blank"
+                    style="color: #1a73e8;">@Gemini_51xueAi</a>
+                &nbsp;|&nbsp;
+                📣 补货通知：<a href="https://t.me/ai51xue" target="_blank" style="color: #1a73e8;">t.me/ai51xue</a>
             </div>
             <div class="custom">
                 {!! dujiaoka_config_get('footer') !!}
