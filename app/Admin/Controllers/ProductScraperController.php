@@ -144,10 +144,24 @@ HTML;
         $baseUrl = $request->input('base_url');
 
         $importedCount = 0;
-        $imgSaveDir = storage_path('app/public/images/scraper');
+        $relativeDir = 'images/scraper';
 
-        if (!file_exists($imgSaveDir)) {
-            mkdir($imgSaveDir, 0755, true);
+        // Ensure directory exists using Storage facade
+        if (!Storage::disk('public')->exists($relativeDir)) {
+            Storage::disk('public')->makeDirectory($relativeDir);
+        }
+
+        $imgSaveDir = Storage::disk('public')->path($relativeDir);
+
+        // Check write permissions strictly before proceeding
+        if (!is_writable($imgSaveDir)) {
+            return $content
+                ->header('Permission Denied')
+                ->body("<div class='alert alert-danger'>
+                        <strong>Server Error:</strong> The directory <code>$imgSaveDir</code> is not writable.<br>
+                        Please run the following command on your server:<br>
+                        <code>chmod -R 777 " . storage_path('app/public') . "</code>
+                        </div>");
         }
 
         foreach ($products as $index => $product) {
