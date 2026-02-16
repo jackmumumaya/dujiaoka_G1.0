@@ -26,6 +26,7 @@ class ProductScraperController extends Controller
     {
         $action = admin_url('product-scraper/preview');
         $organizeAction = admin_url('product-scraper/organize');
+        $clearAction = admin_url('product-scraper/clear');
         $token = csrf_token();
 
         return <<<HTML
@@ -65,9 +66,38 @@ class ProductScraperController extends Controller
             </div>
             <button type="submit" class="btn btn-warning">Organize & Sort Now</button>
         </form>
+        
+        <hr>
+        
+        <form action="$clearAction" method="POST" class="mt-4" onsubmit="return confirm('WARNING: This will delete ALL goods, categories, and camis! This cannot be undone. Are you sure?');">
+            <input type="hidden" name="_token" value="$token">
+            <div class="form-group">
+               <label class="text-danger">Danger Zone</label>
+               <small class="form-text text-danger">Use this to clear database before re-scraping.</small>
+            </div>
+            <button type="submit" class="btn btn-danger">Clear All Goods Data</button>
+        </form>
     </div>
 </div>
 HTML;
+    }
+
+    public function clear(Content $content)
+    {
+        try {
+            // Disable foreign key checks to truncate safely
+            \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            \App\Models\Goods::truncate();
+            \App\Models\GoodsGroup::truncate();
+            \App\Models\Carmis::truncate();
+            \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+            admin_toastr('All goods and categories cleared!', 'success');
+            return redirect()->back();
+        } catch (\Exception $e) {
+            admin_toastr('Clear Failed: ' . $e->getMessage(), 'error');
+            return redirect()->back();
+        }
     }
 
     public function organize(Content $content)

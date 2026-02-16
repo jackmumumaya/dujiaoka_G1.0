@@ -29,4 +29,5 @@ Route::group([
     $router->post('product-scraper/preview', 'ProductScraperController@preview');
     $router->post('product-scraper/import', 'ProductScraperController@import');
     $router->post('product-scraper/organize', 'ProductScraperController@organize');
+    $router->post('product-scraper/clear', 'ProductScraperController@clear');
 });
