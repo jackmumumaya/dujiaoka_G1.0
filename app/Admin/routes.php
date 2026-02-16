@@ -23,4 +23,9 @@ Route::group([
     $router->get('system-setting', 'SystemSettingController@systemSetting');
     $router->get('email-test', 'EmailTestController@emailTest');
     $router->resource('front-users', 'FrontUserController');
+
+    // Product Scraper
+    $router->get('product-scraper', 'ProductScraperController@index');
+    $router->post('product-scraper/preview', 'ProductScraperController@preview');
+    $router->post('product-scraper/import', 'ProductScraperController@import');
 });
