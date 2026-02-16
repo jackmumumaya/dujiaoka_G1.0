@@ -14,3 +14,13 @@ yarn-error.log
 .idea
 install.lock
 .env.buck
+*.tar.gz
+manage_lite.sh
+encrypt_db.sh
+database/database.sqlite
+database/database.sqlite-shm
+database/database.sqlite-wal
+database/database.enc.sqlite
+database/database.sqlite.bak
+package_project_lite.py
+config/database.php.enc

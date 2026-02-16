@@ -55,6 +55,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
+        // SQLCipher Support
+        if (config('database.default') === 'sqlite') {
+            $key = config('database.connections.sqlite.key');
+            if (!empty($key)) {
+                try {
+                    \Illuminate\Support\Facades\DB::connection('sqlite')->getPdo()->exec("PRAGMA key = '" . $key . "';");
+                } catch (\Exception $e) {
+                    // Log error or ignore if connection not yet established
+                }
+            }
+        }
     }
 }
