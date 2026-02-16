@@ -90,6 +90,7 @@ HTML;
                     <th>Original Price</th>
                     <th>New Price (+' . $markup . '%)</th>
                     <th>Stock</th>
+                    <th>Sales</th>
                   </tr></thead><tbody>';
 
         foreach ($products as $index => $product) {
@@ -107,6 +108,7 @@ HTML;
                         <input type="hidden" name="products[' . $index . '][img]" value="' . e($product['img']) . '">
                         <input type="hidden" name="products[' . $index . '][price]" value="' . $newPrice . '">
                         <input type="hidden" name="products[' . $index . '][stock]" value="' . $product['stock'] . '">
+                        <input type="hidden" name="products[' . $index . '][sales_volume]" value="' . ($product['sales_volume'] ?? 0) . '">
                         <input type="hidden" name="products[' . $index . '][category]" value="' . e($product['category']) . '">
                         <input type="hidden" name="products[' . $index . '][url]" value="' . e($product['url']) . '">
                       </td>';
@@ -116,6 +118,7 @@ HTML;
             $html .= '<td>' . $product['price'] . '</td>';
             $html .= '<td><span class="text-success font-weight-bold">' . $newPrice . '</span></td>';
             $html .= '<td>' . $product['stock'] . '</td>';
+            $html .= '<td>' . ($product['sales_volume'] ?? 0) . '</td>';
             $html .= '</tr>';
         }
 
@@ -147,7 +150,7 @@ HTML;
             mkdir($imgSaveDir, 0755, true);
         }
 
-        foreach ($products as $product) {
+        foreach ($products as $index => $product) {
             if (!isset($product['selected']))
                 continue;
 
@@ -197,6 +200,8 @@ HTML;
                 'retail_price' => $product['price'],
                 'actual_price' => $product['price'],
                 'in_stock' => $product['stock'],
+                'sales_volume' => $product['sales_volume'] ?? 0,
+                'ord' => $index + 1,
                 'group_id' => $group->id,
                 'type' => 2, // Manual
                 'is_open' => 1,
@@ -227,7 +232,8 @@ HTML;
         $products = [];
 
         // Strategy 1: i4store Template (Hyper/Grid)
-        if (strpos($html, 'category-btn') !== false && strpos($html, 'item-link') !== false) {
+        // More robust detection
+        if (strpos($html, 'category-btn') !== false || strpos($html, 'item-link') !== false) {
             $products = $this->scrapeI4Store($html, $url, $client);
         }
 
@@ -250,13 +256,23 @@ HTML;
         $products = [];
         $seenUrls = [];
 
-        // 1. Extract Categories: <a href="#cat16" class="category-btn">TikTok ...</a>
-        preg_match_all('/<a[^>]+href="#(cat\d+)"[^>]*class="category-btn[^"]*"[^>]*>(.*?)<\/a>/s', $html, $catMatches, PREG_SET_ORDER);
+        // 1. Extract Categories (Order Independent Regex)
+        // Matches <a ... class="category-btn" ... href="#cat1"> ... </a>
+        // Or <a ... href="#cat1" ... class="category-btn"> ... </a>
+
+        // Just find all anchors with class="category-btn"
+        preg_match_all('/<a[^>]+class="[^"]*category-btn[^"]*"[^>]*>(.*?)<\/a>/s', $html, $matches);
 
         $catMap = [];
-        foreach ($catMatches as $m) {
-            $catMap[$m[1]] = trim(strip_tags($m[2]));
+        foreach ($matches[0] as $i => $fullTag) {
+            // Extract href value
+            if (preg_match('/href=["\']#(cat\d+|all)["\']/', $fullTag, $hrefM)) {
+                $cid = $hrefM[1];
+                $name = trim(strip_tags($matches[1][$i]));
+                $catMap[$cid] = $name;
+            }
         }
+
         // Fallback if no specific categories found or 'All'
         if (empty($catMap))
             $catMap['all'] = 'General';
@@ -287,7 +303,7 @@ HTML;
 
             // We need to limit this contentPart to avoid bleeding into next category
             // Hacky way: split by 'class="panel panel-default' (next category start)
-            $subParts = explode('class="panel panel-default', $contentPart);
+            $subParts = preg_split('/class=["\']panel panel-default/', $contentPart);
             $cleanContent = $subParts[0];
 
             preg_match_all('/<a href="([^"]+)" class="item-link">/i', $cleanContent, $linkMatches);
@@ -328,7 +344,8 @@ HTML;
                     return [
                         'name' => $data['name'] ?? 'Unknown',
                         'price' => $data['price'] ?? 0,
-                        'stock' => $data['stock'] ?? 0,
+                        'stock' => $data['stock_count'] ?? $data['stock'] ?? 0, // Prefer stock_count if available
+                        'sales_volume' => $data['sales_volume'] ?? 0, // In case it exists
                         'img' => $data['cover'] ?? '',
                         'desc' => $data['description'] ?? '',
                         'url' => $url
@@ -363,7 +380,11 @@ HTML;
             // <input ... name="number" ... value="1"> or inventory hidden
             // If stock is 0, it might show "库存 0" tag
             preg_match('/库存\s*(\d+)/', $html, $sMatch);
-            $stock = $sMatch[1] ?? 10; // Default to 10 if not found
+            $stock = $sMatch[1] ?? 0; // Default to 0 if not found
+
+            // Sales Volume (if visible)
+            preg_match('/销量\s*(\d+)/', $html, $saleMatch);
+            $sales = $saleMatch[1] ?? 0;
 
             // Image
             // <img class="img-responsive product-image" src="...">
@@ -392,6 +413,7 @@ HTML;
                 'name' => $name,
                 'price' => $price,
                 'stock' => $stock,
+                'sales_volume' => $sales,
                 'img' => $img,
                 'desc' => trim($desc),
                 'url' => $url
