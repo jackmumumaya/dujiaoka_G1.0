@@ -320,58 +320,76 @@ HTML;
             $response = $client->get($url);
             $html = (string) $response->getBody();
 
-            // Name: <div class="goods-title">...</div> or similar?
-            // On i4store detail page:
-            // Often just simple title. Let's look for <title> as fallback or specific class.
-            // Hyper theme usually has <h3 class="panel-title">Name</h3> or similar
-
-            $name = 'Unknown';
-            preg_match('/<div class="goods-title__text"[^>]*>(.*?)<\/div>/s', $html, $nMatch);
-            if (isset($nMatch[1]))
-                $name = strip_tags($nMatch[1]);
-            else {
-                preg_match('/<h3[^>]*>(.*?)<\/h3>/s', $html, $h3Match);
-                if (isset($h3Match[1]))
-                    $name = strip_tags($h3Match[1]);
+            // Strategy 1: Try to parse "var commodity" JSON (Most robust for this template)
+            if (preg_match('/var\s+commodity\s*=\s*(\{.*?\})\s*;/s', $html, $jsonMatch)) {
+                $json = $jsonMatch[1];
+                $data = json_decode($json, true);
+                if ($data) {
+                    return [
+                        'name' => $data['name'] ?? 'Unknown',
+                        'price' => $data['price'] ?? 0,
+                        'stock' => $data['stock'] ?? 0,
+                        'img' => $data['cover'] ?? '',
+                        'desc' => $data['description'] ?? '',
+                        'url' => $url
+                    ];
+                }
             }
 
+            // Strategy 2: HTML Regex Fallback
+            $name = 'Unknown';
+            // Try h1 (common in detailed pages)
+            preg_match('/<h1[^>]*>(.*?)<\/h1>/s', $html, $h1Match);
+            if (isset($h1Match[1])) {
+                // remove <small> tags often found in h1
+                $name = strip_tags(preg_replace('/<small.*?<\/small>/s', '', $h1Match[1]));
+            } else {
+                preg_match('/<div class="goods-title__text"[^>]*>(.*?)<\/div>/s', $html, $nMatch);
+                if (isset($nMatch[1]))
+                    $name = strip_tags($nMatch[1]);
+            }
+            $name = trim($name);
+
             // Price
-            preg_match('/<span class="price-value">.*?([\d\.]+).*?<\/span>/', $html, $pMatch);
+            // <span class="goods-price" id="goods-price">0.03</span>
+            preg_match('/<span class="goods-price"[^>]*>([\d\.]+)<\/span>/', $html, $pMatch);
             $price = $pMatch[1] ?? 0;
+            if (!$price) {
+                preg_match('/<span class="price-value">.*?([\d\.]+).*?<\/span>/', $html, $pMatch);
+                $price = $pMatch[1] ?? 0;
+            }
 
             // Stock
-            // 库存：999
-            preg_match('/库存.*?(\d+)/', $html, $sMatch);
-            $stock = $sMatch[1] ?? 0;
+            // <input ... name="number" ... value="1"> or inventory hidden
+            // If stock is 0, it might show "库存 0" tag
+            preg_match('/库存\s*(\d+)/', $html, $sMatch);
+            $stock = $sMatch[1] ?? 10; // Default to 10 if not found
 
             // Image
-            // .goods-picture img src
-            preg_match('/<div class="goods-picture">.*?<img src="([^"]+)"/s', $html, $iMatch);
+            // <img class="img-responsive product-image" src="...">
+            preg_match('/<img[^>]+class="[^"]*product-image[^"]*"[^>]+src="([^"]+)"/', $html, $iMatch);
             $img = $iMatch[1] ?? '';
+
+            if (!$img) {
+                preg_match('/<div class="goods-picture">.*?<img src="([^"]+)"/s', $html, $iMatch2);
+                $img = $iMatch2[1] ?? '';
+            }
             // Fallback to OG image
             if (!$img) {
                 preg_match('/<meta property="og:image" content="([^"]+)">/', $html, $ogMatch);
                 $img = $ogMatch[1] ?? '';
             }
-            if ($img && !Str::startsWith($img, 'http')) {
-                // handle absolute/relative
-                // i4store uses /uploads/...
-                // This needs to be handled by the caller if it's a relative path from the base URL
-                // For now, assume it's either absolute or relative to site root (e.g., /uploads/...)
-            }
 
             // Description
-            // .goods-buy-card .goods-intro ? or .panel-body
-            preg_match('/<div class="goods-intro"[^>]*>(.*?)<\/div>/s', $html, $dMatch);
+            preg_match('/<div class="detail-content[^"]*"[^>]*>(.*?)<\/div>\s*<\/div>/s', $html, $dMatch);
             $desc = $dMatch[1] ?? '';
             if (!$desc) {
-                // Try generic description container
                 preg_match('/<div class="panel-body">(.*?)<\/div>/s', $html, $pbMatch);
                 $desc = $pbMatch[1] ?? '';
             }
 
             return [
-                'name' => trim($name),
+                'name' => $name,
                 'price' => $price,
                 'stock' => $stock,
                 'img' => $img,
