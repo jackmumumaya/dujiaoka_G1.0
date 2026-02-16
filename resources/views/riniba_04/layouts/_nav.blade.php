@@ -60,12 +60,13 @@
             hint = document.createElement('div');
             hint.id = hintId;
             hint.setAttribute('role', 'tooltip');
-            // Updated style: Thicker arrow (stroke-width: 4)
+            // Updated to solid BLOCK ARROW based on user image
             hint.innerHTML = `
                 <div style="display: flex; align-items: center; justify-content: flex-end;">
                   <span style="color: #000000; font-weight: bold; font-size: 15px; margin-right: 8px; white-space: nowrap; letter-spacing: 1px;">点击展开</span>
-                  <svg width="42" height="24" viewBox="0 0 42 24" fill="none" style="filter: drop-shadow(0 1px 1px rgba(255,255,255,0.8));">
-                    <path d="M2 12H38M38 12L28 4M38 12L28 20" stroke="#000000" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <svg width="40" height="24" viewBox="0 0 40 24" fill="none" style="filter: drop-shadow(0 1px 1px rgba(255,255,255,0.8));">
+                    <!-- Solid block arrow pointing right -->
+                    <path d="M0 8 H22 V2 L38 12 L22 22 V16 H0 Z" fill="#000000" />
                   </svg>
                 </div>
             `;
@@ -98,7 +99,7 @@
         if (isVisible && !isExpanded) {
             hint.style.display = 'block';
             hint.style.top = (rect.top + rect.height / 2 - 12) + 'px'; 
-            hint.style.left = (rect.left - 130) + 'px'; // Slightly more space for thicker arrow
+            hint.style.left = (rect.left - 130) + 'px'; 
         } else {
             hint.style.display = 'none';
         }
