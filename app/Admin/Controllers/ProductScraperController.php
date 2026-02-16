@@ -415,7 +415,8 @@ HTML;
             $html = (string) $response->getBody();
 
             // Strategy 1: Try to parse "var commodity" JSON (Most robust for this template)
-            if (preg_match('/var\s+commodity\s*=\s*(\{.*?\})\s*;/s', $html, $jsonMatch)) {
+            // Use specific end anchor to handle nested braces in JSON
+            if (preg_match('/var\s+commodity\s*=\s*(\{.*?\})\s*;\s*<\/script>/s', $html, $jsonMatch)) {
                 $json = $jsonMatch[1];
                 $data = json_decode($json, true);
                 if ($data) {
@@ -425,7 +426,7 @@ HTML;
                         'stock' => $data['stock_count'] ?? $data['stock'] ?? 0, // Prefer stock_count if available
                         'sales_volume' => $data['sales_volume'] ?? 0, // In case it exists
                         'img' => $data['cover'] ?? '',
-                        'desc' => $data['description'] ?? '',
+                        'desc' => $data['description'] ?? '', // Description is in JSON
                         'url' => $url
                     ];
                 }
